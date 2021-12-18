@@ -13,12 +13,12 @@ import torch
 import numpy as np
 import networkx as nx
 import random 
+
 import numpy as np
 from time import time
 
 import argparse
 import os
-import time
 import sys
 
 from simple_classify.gumbel import gumbel_softmax
@@ -104,7 +104,7 @@ class NAME(NetworkAlignmentModel):
 
 
         """
-        NAME_start = time()
+        NAME_start = time
         NAME = NAME_MODEL(
             activate_function = self.args.act,
             num_GCN_blocks = self.args.num_GCN_blocks,
@@ -127,12 +127,16 @@ class NAME(NetworkAlignmentModel):
         NAME_S = self.train_NAME(NAME, source_A_hat, target_A_hat, structural_optimizer, self.args.threshold)
 
         gt_train = self.gt_train
-        print('NAME running time: {:.4f}'.format(time() - NAME_start))
+        # print('NAME running time: {:.4f}'.format(time() - NAME_start))
         # Step2: PALE
         start = time()
-        self.args.cuda = True
-        source_info['adj'] = source_info['adj'].cuda()
-        target_info['adj'] = target_info['adj'].cuda()
+
+
+        # self.args.cuda = True
+
+        
+        # source_info['adj'] = source_info['adj'].cuda()
+        # target_info['adj'] = target_info['adj'].cuda()
 
         source_pale, target_pale = self.learn_pale_embs(source_info, target_info)
 
@@ -187,6 +191,8 @@ class NAME(NetworkAlignmentModel):
             super_adj = model(adj, nodes, temp=temp, hard=self.args.hard, beta=self.args.beta)
             loss, ncut_loss, balance_loss = model.loss(super_adj, nodes, balance_node=self.args.balance_node, lam=self.args.lam, w2v_lam = self.args.w2v_lam, new=self.args.new)
 
+            # print(loss, ncut_loss, balance_loss)
+
             if loss!=loss: import pdb;pdb.set_trace()
             total_loss = loss
             total_loss.backward()
@@ -215,6 +221,7 @@ class NAME(NetworkAlignmentModel):
         embedding_onehot = torch.FloatTensor(embedding_onehot)
         if self.args.cuda:
             embedding_onehot = embedding_onehot.cuda()
+        
         return embedding_onehot
 
     
@@ -237,7 +244,7 @@ class NAME(NetworkAlignmentModel):
         n_epochs = self.args.pale_map_epochs
         for epoch in range(1, n_epochs + 1):
             # for time evaluate
-            start = time.time()
+            start = time()
             print('Epochs: ', epoch)
             np.random.shuffle(source_train_nodes)
             for iter in range(n_iters):
@@ -255,7 +262,7 @@ class NAME(NetworkAlignmentModel):
             
                 total_steps += 1
             print("mapping_loss: {:.4f}".format(loss.item()))
-            self.mapping_epoch_time = time.time() - start
+            self.mapping_epoch_time = time() - start
 
         source_pale_map = pale_map(source_pale)
         self.S_pale = torch.matmul(source_pale_map, target_pale.t())
@@ -309,7 +316,7 @@ class NAME(NetworkAlignmentModel):
         n_epochs = self.args.pale_emb_epochs
         for epoch in range(1, n_epochs + 1):
             # for time evaluate
-            start = time.time()
+            # start = time()
             if self.args.log:
                 print("Epoch {0}".format(epoch))
             np.random.shuffle(edges)
@@ -327,11 +334,11 @@ class NAME(NetworkAlignmentModel):
                 print(
                         "train_loss=", "{:.5f}".format(loss.item()),
                         "true_loss=", "{:.5f}".format(loss0.item()),
-                        "neg_loss=", "{:.5f}".format(loss1.item()),
-                        "time", "{:.5f}".format(time.time()-start)
+                        "neg_loss=", "{:.5f}".format(loss1.item())
+                        # "time", "{:.5f}".format(time()-start)
                     )
             # for time evaluate
-            self.embedding_epoch_time = time.time() - start
+            # self.embedding_epoch_time = time() - start
             
         embedding = embedding_model.get_embedding()
         embedding = embedding.cpu().detach().numpy()
@@ -424,7 +431,6 @@ class NAME(NetworkAlignmentModel):
                 except:
                     break
             if nx.number_connected_components(dataset.G) > 1:
-                import random
                 nodes = random.sample(list(dataset.G.nodes()), t_nodes)
             new_G = dataset.G.subgraph(nodes)
             edges = list(new_G.edges())
@@ -620,14 +626,14 @@ class NAME(NetworkAlignmentModel):
         embedding_model.eval()
         source_outputs = embedding_model(refinement_model(source_A_hat, 's'), 's')
         target_outputs = embedding_model(refinement_model(target_A_hat, 't'), 't')
-        print("-"* 100)
-        source_care = torch.LongTensor(list(self.full_dict.keys()))
-        target_care = torch.LongTensor(list(self.full_dict.values()))
-        for i in range(len(source_outputs)):
-            source_i = source_outputs[i][source_care].detach().cpu().numpy()
-            target_i = target_outputs[i][target_care].detach().cpu().numpy()
-            np.save("numpy_emb/source_layer{}".format(i), source_i)
-            np.save("numpy_emb/target_layer{}".format(i), target_i)
+        # print("-"* 100)
+        # source_care = torch.LongTensor(list(self.full_dict.keys()))
+        # target_care = torch.LongTensor(list(self.full_dict.values()))
+        # for i in range(len(source_outputs)):
+        #     source_i = source_outputs[i][source_care].detach().cpu().numpy()
+        #     target_i = target_outputs[i][target_care].detach().cpu().numpy()
+            # np.save("numpy_emb/source_layer{}".format(i), source_i)
+            # np.save("numpy_emb/target_layer{}".format(i), target_i)
         return source_outputs, target_outputs
     
 
