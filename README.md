@@ -1,7 +1,7 @@
 # Network Alignment with Holistic Embeddings
 [TKDE](https://www.computer.org/csdl/journal/tk/5555/01/09507296/1vNfnYDixbO)
 
-![](paper/attention_zip.png)
+![](paper/framework.png)
 
 This is the implementation of
 >Huynh, T.T., Duong, C.T., Nguyen, T.T., Van Tong, V., Sattar, A., Yin, H. and Nguyen, Q.V.H., 2021. Network Alignment with Holistic Embeddings. IEEE Transactions on Knowledge and Data Engineering.
