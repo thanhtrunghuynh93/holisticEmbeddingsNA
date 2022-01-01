@@ -1,5 +1,5 @@
 # Network Alignment with Holistic Embeddings
-[![IEEE](https://csdl-images.computer.org/website/default-covers/trans/tk.jpg)](https://www.computer.org/csdl/journal/tk/5555/01/09507296/1vNfnYDixbO)
+[![IEEE]](https://www.computer.org/csdl/journal/tk/5555/01/09507296/1vNfnYDixbO)
 
 ![](paper/attention_zip.png)
 
